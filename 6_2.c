@@ -8,7 +8,7 @@ typedef struct {
 
 int main(int argc, char* argv[])
 {
-    stu sa[]={
+    stu sa[]={ //初始化数组
         {0,100.0,"foo0"},
         {1,99.9,"foo1"},
         {2,98.8,"foo2"},
@@ -18,21 +18,21 @@ int main(int argc, char* argv[])
 
     // 6_2 1
     {
-        float average=0;
+        float average=0; //利用变量计算平均值
         for(int i=0;i<5;++i)
             average+=sa[i].score;
         printf("average=%f\n",average/5);
 
     }
-    // 6_2 2
-    {
-        printf("average=%f\n",
-               (sa[0].score+
-                sa[1].score+
-                sa[2].score+
-                sa[3].score+
-                sa[4].score)/5);
-    }
+/*    // 6_2 2*/
+    /*{*/
+        /*printf("average=%f\n", //直接相加*/
+               /*(sa[0].score+*/
+                /*sa[1].score+*/
+                /*sa[2].score+*/
+                /*sa[3].score+*/
+                /*sa[4].score)/5);*/
+    /*}*/
 
     return 0;
 }
