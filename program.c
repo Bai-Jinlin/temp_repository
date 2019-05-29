@@ -1,5 +1,8 @@
+// malloc free
 #include <malloc.h>
+// fgets sscanf printf fopen fclose
 #include <stdio.h>
+// strcpy strcmp
 #include <string.h>
 #define CHANGE 960979113899
 #define INSERT 961221679226
@@ -11,6 +14,8 @@
 #define EXIT 882531359
 #define HELP 882618574
 #define EMPTY 741
+
+// 采用List来储存数据
 typedef struct _List List;
 struct _List {
     int id;
@@ -28,9 +33,11 @@ void help()
            "delete id\n"
            "change id word\n"
            "query word\n"
-           "print\n");
+           "print\n"
+           "help\n");
 }
 
+// 将字符串进行散列化得到唯一整数输出，避免main函数频繁出现if
 unsigned long hash(const char* str)
 {
     unsigned long hash = 741;
@@ -39,6 +46,7 @@ unsigned long hash(const char* str)
         hash = ((hash << 5) + hash) + c;
     return hash;
 }
+
 void insert(const char* s)
 {
     List* p;
@@ -76,8 +84,7 @@ int delete (int id)
 
 int query(const char* s)
 {
-    List* p;
-    for (p = head; p; p = p->next)
+    for (List* p = head; p; p = p->next)
         if (!strcmp(s, p->word)) {
             p->status++;
             printf("id=%d status=%d word=%s\n",
@@ -89,8 +96,7 @@ int query(const char* s)
 
 int change(int id, const char* s)
 {
-    List* p;
-    for (p = head; p; p = p->next)
+    for (List* p = head; p; p = p->next)
         if (p->id == id) {
             strcpy(p->word, s);
             return 0;
@@ -105,56 +111,62 @@ void print()
             p->id, p->status, p->word);
 }
 
-void save(char* name)
+// save和load函数用来进行数据持久化
+void save()
 {
     FILE* fd = fopen("data", "w");
     for (List* p = head; p; p = p->next)
         fprintf(fd, "%d %s\n", p->status, p->word);
     fclose(fd);
 }
-void load(char* name)
+
+void load()
 {
     FILE* fd = fopen("data", "r");
     if (!fd)
         return;
     char buf[256];
     char word[64];
-    List* p = head;
-    List* n = p;
+    List *p, *n;
     int status;
     while (fgets(buf, 256, fd) != NULL) {
         sscanf(buf, "%d %s", &status, word);
-        if (!head) {
-            n = p = malloc(sizeof(List));
-            head = p;
-        } else {
-            n = malloc(sizeof(List));
+        n = malloc(sizeof(List));
+        if (!head)
+            head = n;
+        else
             p->next = n;
-            p = n;
-        }
+        p = n;
         n->id = id_count++;
         n->status = status;
         n->next = NULL;
         strcpy(n->word, word);
     }
+    fclose(fd);
 }
 
 int main(int argc, char* argv[])
 {
-    char buf[256] = { 0 };
-    char command[128] = { 0 };
-    char word[64] = { 0 };
+    char buf[256] = { '\0' };
+    char command[128] = { '\0' };
+    char word[64] = { '\0' };
     char* arg = NULL;
     int id = -1;
     int index = 0;
-    load(argv[0]);
+    load();
+    // 关于错误处理
+    // 我们需要处理以下几种情况的错误
+    // 空命令，无效命令，有效命令错误参数
+    // 首先通过初始化和循环结束的语句确保在sscanf即使失败，
+    // command，word，id着三个变量也为空字符串和-1，因为空字符串和-1，不会出现在List里。
+    // 这样即使parse失败把着些变量传递给函数，函数也会正确处理，这些变量，返回错误。
     for (;;) {
         printf("prompt> ");
-        fflush(stdout);
+        fflush(stdout); //stdin是行缓冲的流，所以这里要进行显式flush
         if (fgets(buf, 256, stdin) == NULL)
             break;
         sscanf(buf, "%s%n", command, &index);
-        arg = buf + index;
+        arg = buf + index; // shift参数
         switch (hash(command)) {
         case EMPTY:
             break;
@@ -187,12 +199,13 @@ int main(int argc, char* argv[])
             print();
             break;
         case EXIT:
-            save(argv[0]);
+            save();
             return 0;
         default:
             printf("command not found: %s\n", command);
         }
         id = -1;
+        command[0] = '\0';
         word[0] = '\0';
     }
     return 0;
