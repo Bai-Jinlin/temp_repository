@@ -107,14 +107,14 @@ void print()
 
 void save(char* name)
 {
-    FILE* fd = fopen("config", "w");
+    FILE* fd = fopen("data", "w");
     for (List* p = head; p; p = p->next)
         fprintf(fd, "%d %s\n", p->status, p->word);
     fclose(fd);
 }
 void load(char* name)
 {
-    FILE* fd = fopen("config", "r");
+    FILE* fd = fopen("data", "r");
     if (!fd)
         return;
     char buf[256];
