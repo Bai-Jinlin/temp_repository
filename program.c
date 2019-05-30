@@ -1,8 +1,5 @@
-// malloc free
 #include <malloc.h>
-// fgets sscanf printf fopen fclose
 #include <stdio.h>
-// strcpy strcmp
 #include <string.h>
 #define CHANGE 960979113899
 #define INSERT 961221679226
@@ -159,7 +156,7 @@ int main(int argc, char* argv[])
     // 空命令，无效命令，有效命令错误参数
     // 首先通过初始化和循环结束的语句确保在sscanf即使失败，
     // command，word，id着三个变量也为空字符串和-1，因为空字符串和-1，不会出现在List里。
-    // 这样即使parse失败把着些变量传递给函数，函数也会正确处理，这些变量，返回错误。
+    // 这样即使parse失败把着些变量传递给函数，函数也会正确处理这些变量，返回错误。
     for (;;) {
         printf("prompt> ");
         fflush(stdout); //stdin是行缓冲的流，所以这里要进行显式flush
